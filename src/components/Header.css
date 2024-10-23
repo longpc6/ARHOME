@@ -1,0 +1,84 @@
+/* Header.css */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.7); /* Header mờ và trong suốt */
+  color: white;
+  z-index: 1000; /* Đảm bảo header luôn ở trên */
+  padding: 10px 0;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.logo-img {
+  height: 50px; /* Chiều cao của logo */
+  width: auto;
+}
+
+.nav {
+  display: flex;
+  gap: 20px; /* Khoảng cách giữa các link */
+}
+
+.nav-link {
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+  padding: 10px;
+}
+
+.nav-link:hover {
+  color: #f1f1f1; /* Màu khi hover */
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 10px; /* Khoảng cách giữa các nút */
+}
+
+.btn {
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.login-btn {
+  background-color: transparent;
+  border: 2px solid white;
+  color: white;
+}
+
+.login-btn:hover {
+  background-color: white;
+  color: #333;
+}
+
+.signup-btn {
+  background-color: #007BFF; /* Màu cho nút đăng ký */
+  color: white;
+}
+
+.signup-btn:hover {
+  background-color: #0056b3; /* Màu khi hover */
+}
+
+.nav a {
+  color: white;
+  margin-right: 15px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.nav a:hover {
+  color: #007bff;
+}
