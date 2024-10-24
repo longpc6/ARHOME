@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './Header.css'; // Thêm file css cho Header
-import logo from '../logoArHome6.png'; // Import logo SVG
+import logo from '../../assets/icons/logoArHome6.png'; // Import logo SVG
 
 const Header = () => {
     return (

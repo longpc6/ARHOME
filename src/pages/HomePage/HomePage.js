@@ -1,6 +1,6 @@
 // pages/HomePage.js
 import React from 'react';
-import HeroSection from '../components/HeroSection.js';
+import HeroSection from '../../components/HeroSection/HeroSection.js';
 import './HomePage.css'; // CSS cho trang chủ
 
 const HomePage = () => {

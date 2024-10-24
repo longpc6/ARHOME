@@ -1,12 +1,12 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Header from './components/Header';
-import HomePage from './pages/HomePage';
-import ProductPage from './pages/ProductPage';
-import RoomBuilderPage from './pages/RoomBuilderPage';
-import LoginPage from './pages/LoginPage'; // Import trang login
-import SignupPage from './pages/SignupPage'; // Import trang signup
-import './App.css'; // Thêm file css chính
+import Header from './components/Header/Header';
+import HomePage from './pages/HomePage/HomePage';
+import ProductPage from './pages/ProductPage/ProductPage';
+import RoomBuilderPage from './pages/RoomBuilderPage/RoomBuilderPage';
+import LoginPage from './pages/AuthPage/LoginPage'; // Import trang login
+import SignupPage from './pages/AuthPage/SignupPage'; // Import trang signup
+import './styles/App.css'; // Thêm file css chính
 
 const App = () => {
   return (

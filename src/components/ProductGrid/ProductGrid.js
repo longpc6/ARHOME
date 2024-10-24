@@ -1,6 +1,6 @@
 // src/components/ProductGrid.js
 import React from 'react';
-import ProductCard from './ProductCard';
+import ProductCard from '../ProductCard/ProductCard';
 
 const products = [
   { id: 1, name: 'Bàn gỗ', price: 100, image: 'https://example.com/ban-go.png' },
