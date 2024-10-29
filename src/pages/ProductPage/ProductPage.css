@@ -1,42 +1,121 @@
 /* ProductPage.css */
 .product-page {
-    padding: 50px 20px;
-    background-color: #f1f1f1;
-  }
-  
-  .product-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
-  }
-  
-  .product-card {
-    background-color: white;
-    padding: 20px;
-    border-radius: 5px;
-    text-align: center;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .product-card img {
-    width: 100%;
-    height: auto;
-    border-radius: 5px;
-  }
-  
-  .product-card h3 {
-    margin: 10px 0;
-  }
-  
-  .product-card p {
-    margin-bottom: 20px;
-  }
-  
-  .btn-primary {
-    background-color: #007bff;
-    color: white;
-    padding: 10px 20px;
-    text-decoration: none;
-    border-radius: 5px;
-  }
-  
+  padding: 50px 20px;
+  background-color: #f1f1f1;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.product-card {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.product-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
+}
+
+.product-card h3 {
+  margin: 10px 0;
+}
+
+.product-card p {
+  margin-bottom: 20px;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 5px;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 999;
+  display: none; /* Ẩn overlay mặc định */
+}
+
+/* Hiển thị overlay khi modal đang mở */
+.modal-overlay.active {
+  display: block;
+}
+
+/* Modal Box */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 800px;
+  z-index: 1000;
+  display: none; /* Ẩn modal mặc định */
+  flex-direction: row;
+  overflow: hidden;
+}
+
+/* Hiển thị modal khi active */
+.modal.active {
+  display: flex;
+}
+
+.modal-content {
+  display: flex;
+  width: 100%;
+  height: 500px;
+}
+
+/* Model Viewer trong Modal */
+.model-viewer-container {
+  width: 50%;
+  background-color: #f0f0f0;
+}
+
+/* Thông tin sản phẩm */
+.modal .product-info {
+  width: 50%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.modal .product-info h2 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.modal .product-info p {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.close-button {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #333;
+  color: white;
+  border: none;
+  cursor: pointer;
+  align-self: flex-start;
+  border-radius: 4px;
+}
