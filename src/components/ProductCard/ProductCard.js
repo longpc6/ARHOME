@@ -5,7 +5,7 @@ import './ProductCard.css';
 const ProductCard = ({ product, onViewIn3D }) => {
   return (
     <div className="product-card">
-      <img src={product.image} alt={product.name} />
+      <img src={product.images[0]} alt={product.name} />
       <div className="product-info">
         <h3>{product.name}</h3>
         <p>{product.price.toLocaleString()} VND</p>

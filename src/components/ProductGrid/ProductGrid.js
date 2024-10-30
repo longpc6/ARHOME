@@ -1,12 +1,12 @@
-// src/components/ProductGrid.js
+// src/components/ProductGrid/ProductGrid.js
 import React from 'react';
 import ProductCard from '../ProductCard/ProductCard';
 
-const ProductGrid = () => {
+const ProductGrid = ({ products, onViewIn3D }) => {
   return (
     <div className="product-grid">
       {products.map(product => (
-        <ProductCard key={product.id} product={product} />
+        <ProductCard key={product._id} product={product} onViewIn3D={() => onViewIn3D(product)} />
       ))}
     </div>
   );
