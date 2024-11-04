@@ -7,7 +7,7 @@ import RoomBuilderPage from './pages/RoomBuilderPage/RoomBuilderPage';
 import LoginPage from './pages/AuthPage/LoginPage';
 import SignupPage from './pages/AuthPage/SignupPage';
 import CartPage from './pages/CartPage/CartPage.js'; // Import trang giỏ hàng
-import { CartProvider } from './components/CartContext/CartContext.js'; // Import CartProvider
+import { CartProvider } from './contexts/CartContext/CartContext.js'; // Import CartProvider
 import './styles/App.css';
 
 const App = () => {
