@@ -10,13 +10,15 @@ const ProductPage = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [cart, setCart] = useState([]);
   const [quantity, setQuantity] = useState(1); // State cho số lượng sản phẩm
-  const userId = "yourUserIdHere";
+  const userId = localStorage.getItem("userId");
   const navigate = useNavigate();
+
+  console.log(userId)
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/products');
+        const response = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/products`);
         setProducts(response.data);
       } catch (error) {
         console.error('Error fetching products:', error);
@@ -41,7 +43,7 @@ const ProductPage = () => {
 
   const handleAddToCart = async (product) => {
     try {
-      const response = await axios.post('/api/cart/add', {
+      const response = await axios.post(`${process.env.REACT_APP_SERVER_URL}/api/carts/add`, {
         user_id: userId,
         product_id: product._id,
         quantity: quantity // Truyền số lượng vào giỏ hàng

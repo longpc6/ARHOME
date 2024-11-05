@@ -14,6 +14,7 @@ const Header = () => {
   useEffect(() => {
     // Cập nhật trạng thái đăng nhập khi trang tải lại
     setIsLoggedIn(!!localStorage.getItem('token'));
+    
   }, []);
 
   const handleLogout = () => {

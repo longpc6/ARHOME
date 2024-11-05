@@ -20,8 +20,12 @@ const LoginPage = () => {
         }
       );
 
+      console.log(response.data);
+
       // Lưu token vào localStorage
       localStorage.setItem('token', response.data.token);
+
+      localStorage.setItem("userId", response.data.user.id);
 
       // Thông báo đăng nhập thành công và điều hướng về HomePage
       alert('Đăng nhập thành công');
