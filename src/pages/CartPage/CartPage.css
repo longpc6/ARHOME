@@ -49,12 +49,6 @@ button {
   border-radius: 5px;
 }
 
-.clear-cart {
-  background-color: #ff4d4d;
-  color: white;
-  margin-right: 10px;
-}
-
 .clear-cart:hover {
   background-color: #e60000;
 }

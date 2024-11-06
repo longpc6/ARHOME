@@ -14,7 +14,7 @@ const Header = () => {
   useEffect(() => {
     // Cập nhật trạng thái đăng nhập khi trang tải lại
     setIsLoggedIn(!!localStorage.getItem('token'));
-    
+
   }, []);
 
   const handleLogout = () => {
@@ -37,24 +37,20 @@ const Header = () => {
           <Link to="/about">Giới Thiệu</Link>
         </nav>
         <div className="auth-cart-container">
-          <Link to="/cart" className="cart-icon">
-            <FontAwesomeIcon icon={faShoppingCart} />
-          </Link>
           {isLoggedIn ? (
-            <div className="user-menu-container">
-              <FontAwesomeIcon
-                icon={faUser}
-                className="user-icon"
-                onClick={() => setShowUserMenu(!showUserMenu)}
-              />
-              {showUserMenu && (
+            <>
+              <Link to="/cart" className="cart-icon">
+                <FontAwesomeIcon icon={faShoppingCart} />
+              </Link>
+              <div className="user-menu-container">
+                <FontAwesomeIcon icon={faUser} className="user-icon" />
                 <div className="user-menu">
                   <Link to="/profile">Xem hồ sơ</Link>
                   <Link to="/settings">Cài đặt</Link>
                   <button onClick={handleLogout}>Đăng xuất</button>
                 </div>
-              )}
-            </div>
+              </div>
+            </>
           ) : (
             <div className="auth-buttons">
               <Link to="/login" className="btn login-btn">Đăng nhập</Link>
