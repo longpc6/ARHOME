@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import './Header.css';
 import logo from '../../assets/icons/logoArHome6.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faShoppingCart, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faHeart, faUser } from '@fortawesome/free-solid-svg-icons';
 
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
@@ -14,7 +14,6 @@ const Header = () => {
   useEffect(() => {
     // Cập nhật trạng thái đăng nhập khi trang tải lại
     setIsLoggedIn(!!localStorage.getItem('token'));
-
   }, []);
 
   const handleLogout = () => {
@@ -32,23 +31,33 @@ const Header = () => {
         </Link>
         <nav className="nav">
           <Link to="/">Trang Chủ</Link>
-          <Link to="/products">Sản Phẩm</Link>
-          <Link to="/interior-builder">Xây Dựng Phòng</Link>
+          <Link to="/products">Đồ nội thất</Link>
+          <Link to="/interior-builder">Mẫu kiến trúc</Link>
           <Link to="/about">Giới Thiệu</Link>
         </nav>
-        <div className="auth-cart-container">
+        <div className="auth-favorites-container">
           {isLoggedIn ? (
             <>
-              <Link to="/cart" className="cart-icon">
-                <FontAwesomeIcon icon={faShoppingCart} />
-              </Link>
-              <div className="user-menu-container">
+              {/* Danh sách yêu thích */}
+              <div className="favorites-container">
+                <Link to="/favourites" className="favorites-icon">
+                  <FontAwesomeIcon icon={faHeart} />
+                </Link>
+              </div>
+              {/* Menu người dùng */}
+              <div
+                className="user-menu-container"
+                onMouseEnter={() => setShowUserMenu(true)}
+                onMouseLeave={() => setShowUserMenu(false)}
+              >
                 <FontAwesomeIcon icon={faUser} className="user-icon" />
-                <div className="user-menu">
-                  <Link to="/profile">Xem hồ sơ</Link>
-                  <Link to="/settings">Cài đặt</Link>
-                  <button onClick={handleLogout}>Đăng xuất</button>
-                </div>
+                {showUserMenu && (
+                  <div className="user-menu">
+                    <Link to="/profile">Xem hồ sơ</Link>
+                    <Link to="/settings">Cài đặt</Link>
+                    <button onClick={handleLogout}>Đăng xuất</button>
+                  </div>
+                )}
               </div>
             </>
           ) : (

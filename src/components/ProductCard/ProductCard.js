@@ -1,14 +1,36 @@
-// components/ProductCard/ProductCard.js
-import React from 'react';
+import React, { useState } from 'react';
 import './ProductCard.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHeart } from '@fortawesome/free-regular-svg-icons';
+import { faHeart as faHeartSolid } from '@fortawesome/free-solid-svg-icons';
 
-const ProductCard = ({ product, onViewIn3D }) => {
+const ProductCard = ({ product, isFavourite, onAddToFavourite, onViewIn3D }) => {
+  const [favouritesCount, setFavouritesCount] = useState(product.favouritesCount);
+
+  const handleLikeToggle = () => {
+    setFavouritesCount((prevCount) => (isFavourite ? prevCount - 1 : prevCount + 1)); // Tăng/giảm số lượng like
+    onAddToFavourite(); // Gọi hàm từ parent để đồng bộ hóa backend và state
+  };
+
   return (
-    <div className="product-card" onClick={() => onViewIn3D(product)}> {/* Mở modal khi nhấn vào thẻ */}
-      <img src={product.images[0]} alt={product.name} />
+    <div className="product-card">
+      <img
+        src={product.images[0]}
+        alt={product.name}
+        className="product-image"
+        onClick={onViewIn3D}
+      />
       <div className="product-info">
         <h3>{product.name}</h3>
-        <p>{product.price.toLocaleString()} VND</p>
+        <p>{product.description}</p>
+        <div className="favourite-section">
+          <FontAwesomeIcon
+            icon={isFavourite ? faHeartSolid : faHeart}
+            className={`favourite-icon ${isFavourite ? 'liked' : ''}`}
+            onClick={handleLikeToggle}
+          />
+          <span className="like-count">{favouritesCount} likes</span>
+        </div>
       </div>
     </div>
   );

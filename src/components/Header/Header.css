@@ -3,10 +3,11 @@
   top: 0;
   left: 0;
   width: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.8); /* Tăng độ trong suốt nếu cần */
   color: white;
   z-index: 1000;
   padding: 10px 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Tạo đổ bóng */
 }
 
 .header-container {
@@ -155,4 +156,38 @@
   background-color: #007bff;
   color: white;
   border-radius: 3px;
+}
+
+.auth-favorites-container {
+  display: flex; /* Sắp xếp các phần tử con theo chiều ngang */
+  align-items: center; /* Căn giữa theo trục dọc */
+  gap: 15px; /* Khoảng cách giữa các phần tử */
+}
+
+.favorites-icon {
+  font-size: 1.5em;
+  color: white;
+  cursor: pointer;
+}
+
+.favorites-icon:hover {
+  color: #007bff;
+}
+
+.favorites-container,
+.user-menu-container {
+  display: flex;
+  align-items: center;
+}
+
+.favorites-container {
+  margin-right: 10px; /* Hoặc chỉnh sửa khoảng cách */
+}
+
+@media (max-width: 768px) {
+  .auth-favorites-container {
+    flex-direction: column; /* Sắp xếp theo chiều dọc */
+    align-items: flex-start; /* Căn trái */
+    gap: 10px;
+  }
 }

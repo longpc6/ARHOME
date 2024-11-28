@@ -1,100 +1,143 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 import './ProductPage.css';
 import ProductGrid from '../../components/ProductGrid/ProductGrid.js';
 import ModelViewer from '../../components/ModelViewer/ModelViewer.js';
 
 const ProductPage = () => {
-  const [products, setProducts] = useState([]);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [cart, setCart] = useState([]);
-  const [quantity, setQuantity] = useState(1); // State cho số lượng sản phẩm
-  const userId = localStorage.getItem("userId");
-  const navigate = useNavigate();
-
-  console.log(userId)
+  const [furnitures, setFurnitures] = useState([]);
+  const [favourites, setFavourites] = useState([]); // Lưu danh sách yêu thích
+  const [userId, setUserId] = useState(null); // Kiểm tra người dùng đã đăng nhập hay chưa
+  const [color, setColor] = useState('#ffffff'); // State cho màu sắc
+  const [material, setMaterial] = useState(''); // State cho vật liệu
+  const [selectedFurniture, setSelectedFurniture] = useState(null);
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchFurnituresAndFavourites = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/products`);
-        setProducts(response.data);
+        // Fetch danh sách đồ nội thất
+        const furnituresResponse = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/furnitures`);
+        setFurnitures(furnituresResponse.data);
+  
+        // Kiểm tra token và fetch danh sách yêu thích nếu người dùng đã đăng nhập
+        const token = localStorage.getItem('token');
+        if (token) {
+          const favouritesResponse = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/favourites`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          setFavourites(favouritesResponse.data); // Lưu danh sách đầy đủ
+          setUserId(localStorage.getItem('userId'));
+        }
       } catch (error) {
-        console.error('Error fetching products:', error);
+        console.error('Error fetching furnitures or favourites:', error);
       }
     };
-
-    fetchProducts();
+  
+    fetchFurnituresAndFavourites();
   }, []);
+  
 
-  const handleViewIn3D = (product) => {
-    setSelectedProduct(product);
-    setQuantity(1); // Reset số lượng khi mở modal
+  const handleViewIn3D = (furniture) => {
+    setSelectedFurniture(furniture);
+    setColor('#ffffff'); // Reset màu sắc
+    setMaterial(''); // Reset vật liệu
   };
 
   const closeModal = () => {
-    setSelectedProduct(null);
+    setSelectedFurniture(null);
   };
 
-  const handleQuantityChange = (amount) => {
-    setQuantity((prevQuantity) => Math.max(1, prevQuantity + amount));
-  };
-
-  const handleAddToCart = async (product) => {
+  const handleAddToFavourite = async (furnitureId) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Bạn cần đăng nhập để yêu thích sản phẩm này!');
+      return;
+    }
+  
     try {
-      const response = await axios.post(`${process.env.REACT_APP_SERVER_URL}/api/carts/add`, {
-        user_id: userId,
-        product_id: product._id,
-        quantity: quantity // Truyền số lượng vào giỏ hàng
-      });
-      setCart(response.data);
-      console.log('Thêm sản phẩm vào giỏ hàng:', response.data);
+      const favourite = favourites.find(fav => fav.item_id === furnitureId);
+  
+      if (favourite) {
+        // Nếu đã thích thì unlike
+        await axios.delete(`${process.env.REACT_APP_SERVER_URL}/api/favourites/${favourite._id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setFavourites(prev => prev.filter(fav => fav.item_id !== furnitureId));
+      } else {
+        // Nếu chưa thích thì like
+        const response = await axios.post(
+          `${process.env.REACT_APP_SERVER_URL}/api/favourites`,
+          {
+            user_id: userId,
+            item_id: furnitureId,
+            item_type: 'furniture',
+          },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setFavourites(prev => [...prev, response.data]); // Thêm toàn bộ object mới trả về
+      }
     } catch (error) {
-      console.error('Lỗi khi thêm vào giỏ hàng:', error.message);
+      console.error('Error adding/removing from favourites:', error);
     }
   };
-
-  const handleBuyNow = async (product) => {
-    try {
-      await handleAddToCart(product);
-      navigate('/checkout');
-    } catch (error) {
-      console.error('Lỗi khi mua ngay:', error.message);
-    }
-  };
+  
+  
 
   return (
     <div className="product-page">
-      <h1>Danh sách sản phẩm</h1>
-      <ProductGrid products={products} onViewIn3D={handleViewIn3D} />
-
-      {selectedProduct && (
+    <div className="product-page-header">
+      <h1 className="page-title">Danh sách đồ nội thất</h1>
+    </div>
+      <ProductGrid
+        products={furnitures}
+        favourites={favourites}
+        onAddToFavourite={handleAddToFavourite}
+        onViewIn3D={handleViewIn3D}
+      />
+  
+      {selectedFurniture && (
         <>
-          <div className={`modal-overlay ${selectedProduct ? 'active' : ''}`} onClick={closeModal}></div>
-          <div className={`modal ${selectedProduct ? 'active' : ''}`}>
+          <div
+            className={`modal-overlay ${selectedFurniture ? 'active' : ''}`}
+            onClick={closeModal}
+          ></div>
+          <div className={`modal ${selectedFurniture ? 'active' : ''}`}>
             <div className="modal-content">
               <div className="model-viewer-container">
-                <ModelViewer modelUrl={selectedProduct.model_3d} />
+                <ModelViewer
+                  modelUrl={selectedFurniture.model_3d}
+                  color={color}
+                  material={material}
+                />
               </div>
               <div className="product-info">
-                <h2>{selectedProduct.name}</h2>
-                <p>{selectedProduct.price.toLocaleString()} VND</p>
-                <p>{selectedProduct.description}</p>
-
-                {/* Bộ điều khiển số lượng */}
-                <div className="quantity-control">
-                  <button onClick={() => handleQuantityChange(-1)}>-</button>
-                  <span>{quantity}</span>
-                  <button onClick={() => handleQuantityChange(1)}>+</button>
+                <h2>{selectedFurniture.name}</h2>
+                <div className="color-picker">
+                  <label>Chọn màu sắc:</label>
+                  <input
+                    type="color"
+                    value={color}
+                    onChange={(e) => setColor(e.target.value)}
+                  />
                 </div>
-
+                <div className="material-picker">
+                  <label>Chọn vật liệu:</label>
+                  <select
+                    value={material}
+                    onChange={(e) => setMaterial(e.target.value)}
+                  >
+                    <option value="">Mặc định</option>
+                    <option value="wood">Gỗ</option>
+                    <option value="metal">Kim loại</option>
+                    <option value="glass">Kính</option>
+                  </select>
+                </div>
                 <div className="button-container">
-                  <button onClick={() => handleAddToCart(selectedProduct)} className="cart-button">
-                    Add to Cart
-                  </button>
-                  <button onClick={() => handleBuyNow(selectedProduct)} className="buy-button">
-                    Buy Now
+                  <button
+                    onClick={() => handleAddToFavourite(selectedFurniture)}
+                    className="favourite-button"
+                  >
+                    Yêu thích
                   </button>
                 </div>
               </div>

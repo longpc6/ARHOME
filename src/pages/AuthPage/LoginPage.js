@@ -27,8 +27,6 @@ const LoginPage = () => {
 
       localStorage.setItem("userId", response.data.user.id);
 
-      // Thông báo đăng nhập thành công và điều hướng về HomePage
-      alert('Đăng nhập thành công');
       navigate('/'); // Chuyển đến màn hình HomePage
       window.location.reload(); // Làm mới trang để cập nhật lại header
     } catch (error) {

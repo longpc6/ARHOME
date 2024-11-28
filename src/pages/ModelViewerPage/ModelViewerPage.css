@@ -1,0 +1,16 @@
+.model-viewer-page {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.file-input {
+  margin: 10px 0;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+p {
+  font-style: italic;
+  color: #777;
+}

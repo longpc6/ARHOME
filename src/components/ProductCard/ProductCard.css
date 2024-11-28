@@ -1,49 +1,78 @@
 .product-card {
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    margin: 20px;
-    transition: transform 0.3s ease-in-out;
-  }
-  
-  .product-card:hover {
-    transform: scale(1.05);
-  }
-  
-  .product-card img {
-    width: 100%;
-    height: auto;
-  }
-  
-  .product-info {
-    padding: 15px;
-    text-align: center;
-  }
-  
-  .product-info h3 {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-  }
-  
-  .product-info p {
-    font-size: 1.2rem;
-    color: #666;
-    margin-bottom: 15px;
-  }
-  
-  .product-button {
-    padding: 10px 20px;
-    background-color: #333;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .product-button:hover {
-    background-color: #555;
-  }
-  
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin: 20px;
+  transition: transform 0.3s ease-in-out;
+  width: 300px; /* Đảm bảo kích thước đồng nhất */
+}
+
+.product-card:hover {
+  transform: scale(1.05);
+}
+
+.product-card img {
+  width: 100%;
+  height: auto;
+  cursor: pointer;
+}
+
+.product-info {
+  padding: 15px;
+  text-align: center;
+}
+
+.product-info h3 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.product-info p {
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.product-button {
+  padding: 10px 20px;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.product-button:hover {
+  background-color: #555;
+}
+
+.favourite-section {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Căn giữa nội dung */
+  gap: 10px; /* Khoảng cách giữa các phần tử */
+  margin-top: 10px;
+}
+
+.favourite-icon {
+  color: #888;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.favourite-icon.liked {
+  color: #ff4d4d; /* Màu đỏ nếu đã thích */
+}
+
+.favourite-icon:hover {
+  transform: scale(1.2); /* Hiệu ứng phóng to khi hover */
+}
+
+.like-count {
+  font-size: 0.9rem;
+  color: #666;
+}
