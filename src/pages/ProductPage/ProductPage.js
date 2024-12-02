@@ -3,6 +3,7 @@ import axios from 'axios';
 import './ProductPage.css';
 import ProductGrid from '../../components/ProductGrid/ProductGrid.js';
 import ModelViewer from '../../components/ModelViewer/ModelViewer.js';
+import UploadFurnitureForm from '../../components/UploadFurnitureForm/UploadFurnitureForm.js';
 
 const ProductPage = () => {
   const [furnitures, setFurnitures] = useState([]);
@@ -81,12 +82,16 @@ const ProductPage = () => {
     }
   };
   
+  const handleUploadSuccess = (newFurniture) => {
+    setFurnitures((prev) => [...prev, newFurniture]); // Thêm sản phẩm mới vào danh sách
+  };
   
 
   return (
     <div className="product-page">
     <div className="product-page-header">
       <h1 className="page-title">Danh sách đồ nội thất</h1>
+      <UploadFurnitureForm onUploadSuccess={handleUploadSuccess} />
     </div>
       <ProductGrid
         products={furnitures}
