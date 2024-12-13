@@ -7,41 +7,46 @@ import UploadFurnitureForm from '../../components/UploadFurnitureForm/UploadFurn
 
 const ProductPage = () => {
   const [furnitures, setFurnitures] = useState([]);
-  const [favourites, setFavourites] = useState([]); // Lưu danh sách yêu thích
-  const [userId, setUserId] = useState(null); // Kiểm tra người dùng đã đăng nhập hay chưa
-  const [color, setColor] = useState('#ffffff'); // State cho màu sắc
-  const [material, setMaterial] = useState(''); // State cho vật liệu
+  const [favourites, setFavourites] = useState([]);
+  const [userId, setUserId] = useState(null);
+  const [color, setColor] = useState('original');
+  const [material, setMaterial] = useState('original');
+  const [texture, setTexture] = useState(null); // Texture cho mô hình
   const [selectedFurniture, setSelectedFurniture] = useState(null);
+  const [showUploadForm, setShowUploadForm] = useState(false); // Thêm state để điều khiển hiển thị form
 
-  useEffect(() => {
-    const fetchFurnituresAndFavourites = async () => {
+
+  const fetchFurnituresAndFavourites = async () => {
       try {
-        // Fetch danh sách đồ nội thất
         const furnituresResponse = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/furnitures`);
         setFurnitures(furnituresResponse.data);
-  
-        // Kiểm tra token và fetch danh sách yêu thích nếu người dùng đã đăng nhập
+
         const token = localStorage.getItem('token');
         if (token) {
           const favouritesResponse = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/favourites`, {
             headers: { Authorization: `Bearer ${token}` },
           });
-          setFavourites(favouritesResponse.data); // Lưu danh sách đầy đủ
+          setFavourites(favouritesResponse.data);
           setUserId(localStorage.getItem('userId'));
         }
       } catch (error) {
         console.error('Error fetching furnitures or favourites:', error);
       }
-    };
-  
+    }
+
+  useEffect(() => {
     fetchFurnituresAndFavourites();
   }, []);
-  
 
   const handleViewIn3D = (furniture) => {
     setSelectedFurniture(furniture);
-    setColor('#ffffff'); // Reset màu sắc
-    setMaterial(''); // Reset vật liệu
+    setColor('original');
+    setMaterial('original');
+    setTexture(null);
+  };
+
+  const toggleUploadForm = () => {
+    setShowUploadForm((prev) => !prev); // Chuyển trạng thái hiển thị form
   };
 
   const closeModal = () => {
@@ -54,58 +59,73 @@ const ProductPage = () => {
       alert('Bạn cần đăng nhập để yêu thích sản phẩm này!');
       return;
     }
-  
+
     try {
-      const favourite = favourites.find(fav => fav.item_id === furnitureId);
-  
+      const favourite = favourites.find((fav) => fav.item_id === furnitureId);
+
       if (favourite) {
-        // Nếu đã thích thì unlike
         await axios.delete(`${process.env.REACT_APP_SERVER_URL}/api/favourites/${favourite._id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setFavourites(prev => prev.filter(fav => fav.item_id !== furnitureId));
+        setFavourites((prev) => prev.filter((fav) => fav.item_id !== furnitureId));
       } else {
-        // Nếu chưa thích thì like
         const response = await axios.post(
           `${process.env.REACT_APP_SERVER_URL}/api/favourites`,
           {
             user_id: userId,
             item_id: furnitureId,
             item_type: 'furniture',
+            customization: { color, material, texture },
           },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        setFavourites(prev => [...prev, response.data]); // Thêm toàn bộ object mới trả về
+        setFavourites((prev) => [...prev, response.data]);
       }
     } catch (error) {
       console.error('Error adding/removing from favourites:', error);
     }
   };
-  
-  const handleUploadSuccess = (newFurniture) => {
-    setFurnitures((prev) => [...prev, newFurniture]); // Thêm sản phẩm mới vào danh sách
+
+  const handleTextureUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setTexture(reader.result); // Base64 URL của hình ảnh
+      };
+      reader.readAsDataURL(file);
+    }
   };
-  
+
+  const handleUploadSuccess = () => {
+    fetchFurnituresAndFavourites();
+  };
 
   return (
     <div className="product-page">
-    <div className="product-page-header">
-      <h1 className="page-title">Danh sách đồ nội thất</h1>
-      <UploadFurnitureForm onUploadSuccess={handleUploadSuccess} />
-    </div>
+      <div className="product-page-header">
+        <h1 className="page-title">Danh sách đồ nội thất</h1>
+        <div className="upload-button-container">
+          {/* Nút để hiển thị form */}
+          <button onClick={toggleUploadForm} className="upload-button">
+            {showUploadForm ? "Đóng Form Tải Lên" : "Tải Lên Đồ Nội Thất"}
+          </button>
+        </div>
+
+        {/* Hiển thị form khi state showUploadForm là true */}
+        {showUploadForm && <UploadFurnitureForm onUploadSuccess={handleUploadSuccess} />}
+
+      </div>
       <ProductGrid
         products={furnitures}
         favourites={favourites}
         onAddToFavourite={handleAddToFavourite}
         onViewIn3D={handleViewIn3D}
       />
-  
+
       {selectedFurniture && (
         <>
-          <div
-            className={`modal-overlay ${selectedFurniture ? 'active' : ''}`}
-            onClick={closeModal}
-          ></div>
+          <div className={`modal-overlay ${selectedFurniture ? 'active' : ''}`} onClick={closeModal}></div>
           <div className={`modal ${selectedFurniture ? 'active' : ''}`}>
             <div className="modal-content">
               <div className="model-viewer-container">
@@ -113,36 +133,41 @@ const ProductPage = () => {
                   modelUrl={selectedFurniture.model_3d}
                   color={color}
                   material={material}
+                  texture={texture}
                 />
               </div>
               <div className="product-info">
                 <h2>{selectedFurniture.name}</h2>
                 <div className="color-picker">
                   <label>Chọn màu sắc:</label>
-                  <input
-                    type="color"
-                    value={color}
-                    onChange={(e) => setColor(e.target.value)}
-                  />
+                  <select value={color} onChange={(e) => setColor(e.target.value)}>
+                    <option value="original">Mặc định</option>
+                    <option value="black-grey">Đen xám</option>
+                    <option value="white-vanilla">Trắng vani</option>
+                    <option value="brown">Màu nâu</option>
+                  </select>
                 </div>
                 <div className="material-picker">
                   <label>Chọn vật liệu:</label>
-                  <select
-                    value={material}
-                    onChange={(e) => setMaterial(e.target.value)}
-                  >
-                    <option value="">Mặc định</option>
+                  <select value={material} onChange={(e) => setMaterial(e.target.value)}>
+                    <option value="original">Mặc định</option>
                     <option value="wood">Gỗ</option>
                     <option value="metal">Kim loại</option>
-                    <option value="glass">Kính</option>
+                    <option value="diamond">Giả kim cương</option>
                   </select>
+                </div>
+                <div className="texture-picker">
+                  <label>Tải ảnh để in lên mô hình:</label>
+                  <input type="file" accept="image/*" onChange={handleTextureUpload} />
                 </div>
                 <div className="button-container">
                   <button
-                    onClick={() => handleAddToFavourite(selectedFurniture)}
+                    onClick={() => handleAddToFavourite(selectedFurniture._id)}
                     className="favourite-button"
                   >
-                    Yêu thích
+                    {favourites.some((fav) => fav.item_id === selectedFurniture._id)
+                      ? 'Bỏ yêu thích'
+                      : 'Yêu thích'}
                   </button>
                 </div>
               </div>

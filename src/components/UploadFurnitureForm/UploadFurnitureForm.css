@@ -1,0 +1,78 @@
+/* Đặt toàn bộ kiểu dáng cho form */
+.upload-form {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Kiểu dáng cho các trường nhập */
+  .upload-form input,
+  .upload-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  
+  .upload-form input[type="file"] {
+    padding: 5px;
+  }
+  
+  /* Kiểu dáng cho các label */
+  .upload-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  /* Kiểu dáng cho nút submit */
+  .upload-form button {
+    width: 100%;
+    padding: 12px;
+    background-color: #4CAF50;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .upload-form button:hover {
+    background-color: #45a049;
+  }
+  
+  .upload-form button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+  
+  /* Kiểu dáng cho thông báo */
+  .upload-form p {
+    margin-top: 15px;
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  .upload-form p.green {
+    color: green;
+  }
+  
+  .upload-form p.red {
+    color: red;
+  }
+  
+  /* Kiểu dáng cho các thông báo lỗi */
+  .upload-form .error-message {
+    color: #ff0000;
+    font-size: 14px;
+    text-align: center;
+    margin-top: 10px;
+  }
+  

@@ -1,5 +1,6 @@
 import React from 'react';
 import ProductCard from '../ProductCard/ProductCard';
+import './ProductGrid.css';
 
 const ProductGrid = ({ products, favourites, onAddToFavourite, onViewIn3D }) => {
   return (

@@ -3,9 +3,12 @@
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  margin: 20px;
+  /* margin: 20px; */
   transition: transform 0.3s ease-in-out;
-  width: 300px; /* Đảm bảo kích thước đồng nhất */
+  /* width: 300px; */
+  padding: 20px;
+  border-radius: 25px;
+  text-align: center;
 }
 
 .product-card:hover {
@@ -13,9 +16,10 @@
 }
 
 .product-card img {
-  width: 100%;
-  height: auto;
+  width: 50%;
+  height: 50%;
   cursor: pointer;
+  border-radius: 5px;
 }
 
 .product-info {
@@ -29,7 +33,7 @@
 }
 
 .product-info p {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   color: #666;
   margin-bottom: 15px;
 }

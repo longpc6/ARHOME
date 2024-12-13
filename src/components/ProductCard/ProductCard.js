@@ -22,7 +22,7 @@ const ProductCard = ({ product, isFavourite, onAddToFavourite, onViewIn3D }) => 
       />
       <div className="product-info">
         <h3>{product.name}</h3>
-        <p>{product.description}</p>
+        <p>{product.userId.fullName}</p>
         <div className="favourite-section">
           <FontAwesomeIcon
             icon={isFavourite ? faHeartSolid : faHeart}
