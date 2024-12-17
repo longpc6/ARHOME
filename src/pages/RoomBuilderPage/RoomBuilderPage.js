@@ -1,13 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Canvas, useThree, useFrame } from '@react-three/fiber';
-import { OrbitControls, useGLTF } from '@react-three/drei';
-
-// Component render mô hình GLTF
-const Model = ({ url, position, scale = 1, onPointerDown }) => {
-  const { scene } = useGLTF(url);
-  return <primitive object={scene} position={position} scale={scale} onPointerDown={onPointerDown} />;
-};
+import EditableModelViewer from '../../components/EditableModelView/EditableModelViewer.js'; // Đảm bảo bạn đã import đúng component này
 
 // Component hiển thị item nội thất trong sidebar
 const FurnitureItem = ({ model, onDragStart }) => (
@@ -29,12 +22,8 @@ const FurnitureItem = ({ model, onDragStart }) => (
 const RoomBuilderPage = () => {
   const [architecturalModels, setArchitecturalModels] = useState([]);
   const [furnitureModels, setFurnitureModels] = useState([]);
-  const [selectedArchitecture, setSelectedArchitecture] = useState(null);
+  const [selectedArchitecture, setSelectedArchitecture] = useState(architecturalModels[0]?.url || null);
   const [furnitureOnCanvas, setFurnitureOnCanvas] = useState([]);
-  const [draggingModel, setDraggingModel] = useState(null);
-  const [draggingPosition, setDraggingPosition] = useState([0, 0, 0]);
-
-  const userId = localStorage.getItem('userId');
 
   // Fetch architectural models
   useEffect(() => {
@@ -76,46 +65,18 @@ const RoomBuilderPage = () => {
     setFurnitureOnCanvas((prev) => [...prev, { ...model, position: [x, 0, z] }]);
   };
 
-  // Handle model dragging
-  const handlePointerDown = (event, index) => {
-    setDraggingModel(index); // Lưu lại chỉ mục của vật thể đang được kéo
-    const { x, y, z } = furnitureOnCanvas[index].position;
-    setDraggingPosition([x, y, z]); // Lưu lại vị trí ban đầu
-  };
-
-  const handlePointerMove = (event) => {
-    if (draggingModel === null) return;
-
-    const { x, z } = event.unprojectedPoint; // Dùng unprojectedPoint để tính vị trí trong không gian 3D
-    setDraggingPosition([x, 0, z]); // Cập nhật vị trí mới của vật thể
-  };
-
-  const handlePointerUp = () => {
-    if (draggingModel !== null) {
-      setFurnitureOnCanvas((prev) => {
-        const updatedFurniture = [...prev];
-        updatedFurniture[draggingModel] = {
-          ...updatedFurniture[draggingModel],
-          position: draggingPosition,
-        };
-        return updatedFurniture;
-      });
-      setDraggingModel(null);
-    }
-  };
-
   // Upload architectural model
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
-    if (!file) return;
+    if (!file || !file.name.endsWith('.gltf') && !file.name.endsWith('.glb')) {
+      alert('Vui lòng tải lên tệp GLTF hoặc GLB');
+      return;
+    }
   
     const reader = new FileReader();
     reader.onload = (e) => {
       const objectUrl = e.target.result; // URL của mô hình
-      setArchitecturalModels((prev) => [
-        ...prev,
-        { name: file.name, url: objectUrl },
-      ]);
+      setArchitecturalModels((prev) => [...prev, { name: file.name, url: objectUrl }]);
       setSelectedArchitecture(objectUrl); // Tự động hiển thị mô hình vừa tải lên
     };
   
@@ -123,19 +84,10 @@ const RoomBuilderPage = () => {
   };
   
 
-  // Lưu mô hình kiến trúc (placeholder, bạn sẽ làm sau)
-  const handleSaveArchitecture = () => {
-    if (!selectedArchitecture) {
-      alert('Không có mô hình kiến trúc nào được chọn để lưu.');
-      return;
-    }
-    alert('Chức năng lưu đang được phát triển.');
-  };
-
   return (
-    <div style={{ display: 'flex', height: '100vh' }}>
+    <div style={{ display: 'flex', padding: '80px 20px' }}>
       {/* Sidebar */}
-      <div style={{ width: '20%', borderRight: '1px solid gray', padding: '10px' }}>
+      <div style={{ width: '20%', borderRight: '2px solid gray', padding: '20px' }}>
         <h3>Mô hình kiến trúc</h3>
         {architecturalModels.map((model, index) => (
           <div
@@ -162,13 +114,6 @@ const RoomBuilderPage = () => {
           <h4>Tải lên mô hình kiến trúc</h4>
           <input type="file" onChange={handleFileUpload} />
         </div>
-
-        {/* Nút lưu mô hình */}
-        <div style={{ marginTop: '20px' }}>
-          <button onClick={handleSaveArchitecture} style={{ padding: '10px', width: '100%' }}>
-            Lưu mô hình kiến trúc
-          </button>
-        </div>
       </div>
 
       {/* Canvas */}
@@ -177,30 +122,10 @@ const RoomBuilderPage = () => {
         onDrop={handleDrop}
         onDragOver={(e) => e.preventDefault()}
       >
-        <Canvas
-          shadows
-          camera={{ position: [0, 2, 5], fov: 50 }}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-        >
-          <ambientLight intensity={0.8} />
-          <directionalLight position={[5, 5, 5]} intensity={1.5} />
-
-          {/* Hiển thị mô hình kiến trúc được chọn */}
-          {selectedArchitecture && <Model url={selectedArchitecture} position={[0, 0, 0]} />}
-
-          {/* Hiển thị các đồ nội thất được thả vào */}
-          {furnitureOnCanvas.map((item, index) => (
-            <Model
-              key={index}
-              url={item.model_3d}
-              position={draggingModel === index ? draggingPosition : item.position}
-              onPointerDown={(e) => handlePointerDown(e, index)}
-            />
-          ))}
-
-          <OrbitControls />
-        </Canvas>
+        <EditableModelViewer
+          modelUrl={selectedArchitecture}
+          // furnitureModels={furnitureOnCanvas}
+        />
       </div>
     </div>
   );
