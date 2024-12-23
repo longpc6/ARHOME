@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import EditableModelViewer from '../../components/EditableModelView/EditableModelViewer.js'; // Đảm bảo bạn đã import đúng component này
+import EditableModelViewer from '../../components/EditableModelView/EditableModelViewer.js';
 
-// Component hiển thị item nội thất trong sidebar
 const FurnitureItem = ({ model, onDragStart }) => (
   <div
     draggable
@@ -22,10 +21,9 @@ const FurnitureItem = ({ model, onDragStart }) => (
 const RoomBuilderPage = () => {
   const [architecturalModels, setArchitecturalModels] = useState([]);
   const [furnitureModels, setFurnitureModels] = useState([]);
-  const [selectedArchitecture, setSelectedArchitecture] = useState(architecturalModels[0]?.url || null);
+  const [selectedArchitecture, setSelectedArchitecture] = useState(null);
   const [furnitureOnCanvas, setFurnitureOnCanvas] = useState([]);
 
-  // Fetch architectural models
   useEffect(() => {
     const fetchArchitecturalModels = async () => {
       try {
@@ -38,7 +36,6 @@ const RoomBuilderPage = () => {
     fetchArchitecturalModels();
   }, []);
 
-  // Fetch furniture models
   useEffect(() => {
     const fetchFurnitureModels = async () => {
       try {
@@ -51,80 +48,89 @@ const RoomBuilderPage = () => {
     fetchFurnitureModels();
   }, []);
 
-  // Drag furniture item
+  useEffect(() => {
+    if (architecturalModels.length > 0) {
+      setSelectedArchitecture(architecturalModels[0].url);
+    }
+  }, [architecturalModels]);
+
   const handleDragStart = (e, model) => {
     e.dataTransfer.setData('model', JSON.stringify(model));
   };
 
-  // Drop furniture item vào canvas
   const handleDrop = (e) => {
     e.preventDefault();
     const model = JSON.parse(e.dataTransfer.getData('model'));
-    const x = (e.clientX / window.innerWidth) * 10 - 5; // Map vị trí drop sang canvas
-    const z = (e.clientY / window.innerHeight) * -10 + 5;
+    console.log('Model:', model);
+    const rect = e.target.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 10 - 5;
+    const z = ((e.clientY - rect.top) / rect.height) * -10 + 5;
     setFurnitureOnCanvas((prev) => [...prev, { ...model, position: [x, 0, z] }]);
   };
 
-  // Upload architectural model
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
-    if (!file || !file.name.endsWith('.gltf') && !file.name.endsWith('.glb')) {
+    if (!file || (!file.name.endsWith('.gltf') && !file.name.endsWith('.glb'))) {
       alert('Vui lòng tải lên tệp GLTF hoặc GLB');
       return;
     }
-  
+
     const reader = new FileReader();
     reader.onload = (e) => {
-      const objectUrl = e.target.result; // URL của mô hình
+      const objectUrl = e.target.result;
       setArchitecturalModels((prev) => [...prev, { name: file.name, url: objectUrl }]);
-      setSelectedArchitecture(objectUrl); // Tự động hiển thị mô hình vừa tải lên
+      setSelectedArchitecture(objectUrl);
     };
-  
-    reader.readAsDataURL(file); // Đọc file để tạo URL tạm
+
+    reader.readAsDataURL(file);
   };
-  
 
   return (
     <div style={{ display: 'flex', padding: '80px 20px' }}>
-      {/* Sidebar */}
-      <div style={{ width: '20%', borderRight: '2px solid gray', padding: '20px' }}>
+      <div style={{ display: 'absolute', width: '20%', borderRight: '2px solid gray', padding: '20px' }}>
         <h3>Mô hình kiến trúc</h3>
-        {architecturalModels.map((model, index) => (
-          <div
-            key={index}
-            style={{
-              border: selectedArchitecture === model.url ? '2px solid blue' : '1px solid gray',
-              padding: '10px',
-              margin: '5px',
-              cursor: 'pointer',
-            }}
-            onClick={() => setSelectedArchitecture(model.url)}
-          >
-            {model.name}
-          </div>
-        ))}
+        {architecturalModels.length === 0 ? (
+          <p>Không có mô hình nào để hiển thị.</p>
+        ) : (
+          architecturalModels.map((model, index) => (
+            <div
+              key={index}
+              style={{
+                border: selectedArchitecture === model.url ? '2px solid blue' : '1px solid gray',
+                padding: '10px',
+                margin: '5px',
+                cursor: 'pointer',
+              }}
+              onClick={() => setSelectedArchitecture(model.url)}
+            >
+              {model.name}
+            </div>
+          ))
+        )}
 
         <h3>Mô hình nội thất</h3>
-        {furnitureModels.map((model, index) => (
-          <FurnitureItem key={index} model={model} onDragStart={handleDragStart} />
-        ))}
+        {furnitureModels.length === 0 ? (
+          <p>Không có mô hình nào để hiển thị.</p>
+        ) : (
+          furnitureModels.map((model, index) => (
+            <FurnitureItem key={index} model={model} onDragStart={handleDragStart} />
+          ))
+        )}
 
-        {/* Upload kiến trúc */}
         <div style={{ marginTop: '20px' }}>
           <h4>Tải lên mô hình kiến trúc</h4>
           <input type="file" onChange={handleFileUpload} />
         </div>
       </div>
 
-      {/* Canvas */}
       <div
         style={{ width: '80%', position: 'relative' }}
         onDrop={handleDrop}
         onDragOver={(e) => e.preventDefault()}
       >
         <EditableModelViewer
-          modelUrl={selectedArchitecture}
-          // furnitureModels={furnitureOnCanvas}
+          modelUrl={selectedArchitecture || ''}
+          furnitureModels={furnitureOnCanvas || []}
         />
       </div>
     </div>

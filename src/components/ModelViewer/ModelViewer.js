@@ -1,13 +1,23 @@
-import React, { Suspense, useEffect, useRef } from 'react';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls, useGLTF, Environment } from '@react-three/drei';
-import * as THREE from 'three';
+import React, { Suspense, useEffect, useRef } from "react";
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls, useGLTF, Environment } from "@react-three/drei";
+import * as THREE from "three";
 
 const Model = ({ url, color, material }) => {
   const { scene } = useGLTF(url);
   const originalAttributes = useRef(new Map()); // Lưu trữ thuộc tính gốc của từng mesh
 
+  const centerModelToOrigin = (object) => {
+    const box = new THREE.Box3().setFromObject(object); // Tính bounding box
+    const center = box.getCenter(new THREE.Vector3()); // Tâm của bounding box
+    object.position.sub(center); // Dịch tâm về (0, 0, 0)
+  };
+
   useEffect(() => {
+    // Tự động căn chỉnh mô hình về trục Oxyz
+    centerModelToOrigin(scene);
+
+    // Xử lý màu sắc và texture
     scene.traverse((child) => {
       if (child.isMesh) {
         const originalData = originalAttributes.current.get(child.uuid);
@@ -20,22 +30,23 @@ const Model = ({ url, color, material }) => {
           });
         }
 
-        const { color: originalColor, map: originalMap } = originalAttributes.current.get(child.uuid);
+        const { color: originalColor, map: originalMap } =
+          originalAttributes.current.get(child.uuid);
 
         // Áp dụng màu sắc
-        if (color === 'original') {
+        if (color === "original") {
           child.material.color.copy(originalColor); // Khôi phục màu gốc
         } else {
           const colorMap = {
-            'black-grey': new THREE.Color(0.1, 0.1, 0.1),
-            'white-vanilla': new THREE.Color(1, 0.9, 0.8),
+            "black-grey": new THREE.Color(0.1, 0.1, 0.1),
+            "white-vanilla": new THREE.Color(1, 0.9, 0.8),
             brown: new THREE.Color(0.6, 0.4, 0.2),
           };
           child.material.color = colorMap[color] || originalColor;
         }
 
         // Áp dụng hoặc khôi phục texture
-        if (material === 'original') {
+        if (material === "original") {
           child.material.map = originalMap; // Khôi phục texture gốc
         } else {
           const textureMap = {
@@ -60,13 +71,12 @@ const Model = ({ url, color, material }) => {
   return <primitive object={scene} scale={1} />;
 };
 
-
-const ModelViewer = ({ modelUrl, color = 'original', material = 'original' }) => {
+const ModelViewer = ({ modelUrl, color = "original", material = "original" }) => {
   return (
     <Canvas
-      style={{ width: '100%', height: '500px' }}
+      style={{ width: "100%", height: "500px" }}
       shadows
-      camera={{ position: [0, 2, 5], fov: 50 }}
+      camera={{ position: [0, 50, 100], fov: 70 }}
     >
       <ambientLight intensity={0.8} />
       <directionalLight position={[5, 5, 5]} intensity={1.5} castShadow />

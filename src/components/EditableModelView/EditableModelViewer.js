@@ -2,15 +2,15 @@ import React, { Suspense, useRef, useState, useEffect } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
 import { OrbitControls, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
+import { Html } from '@react-three/drei';
 
-// Component Draggable
 const Draggable = ({ children }) => {
-  const { camera, scene } = useThree();
+  const { camera, scene, gl } = useThree();
   const raycaster = useRef(new THREE.Raycaster());
   const mouse = useRef(new THREE.Vector2());
-  const [draggable, setDraggable] = useState(null); // Object đang được pick
+  const [activeObject, setActiveObject] = useState(null); // Object đang được pick
+  const [mode, setMode] = useState('drag'); // Chế độ hiện tại: "drag" hoặc "rotate"
 
-  // Lọc để lấy parent object cấp cao nhất
   const getTopParent = (object) => {
     while (object.parent && object.parent.type !== "Scene") {
       object = object.parent;
@@ -18,103 +18,170 @@ const Draggable = ({ children }) => {
     return object;
   };
 
-  // Hàm tính giao điểm
   const getIntersectedObjects = (event) => {
-    // Lấy vị trí và kích thước của Canvas
     const rect = event.target.getBoundingClientRect();
-  
-    // Chuẩn hóa tọa độ chuột theo Canvas
     mouse.current.set(
       ((event.clientX - rect.left) / rect.width) * 2 - 1,
       -((event.clientY - rect.top) / rect.height) * 2 + 1
     );
-  
-    // Tính raycaster từ tọa độ chuẩn hóa
     raycaster.current.setFromCamera(mouse.current, camera);
-  
-    // Trả về các object giao với raycaster
     return raycaster.current.intersectObjects(scene.children, true);
   };
 
-  // Xử lý click chuột để chọn Object
   const handleMouseClick = (event) => {
     const intersects = getIntersectedObjects(event);
-
-    console.log('Intersected Objects:', intersects);
-
-    // Lọc các object có `userData.draggable`
     const draggableObjects = intersects
       .map((intersect) => getTopParent(intersect.object))
       .filter((obj) => obj.userData && obj.userData.draggable);
 
-    if (draggable) {
-      console.log('Dropping object:', draggable.name);
-      setDraggable(null);
-    } else if (draggableObjects.length > 0) {
+    if (draggableObjects.length > 0) {
       const pickedObject = draggableObjects[0];
-      console.log('Picked object:', pickedObject.name);
-      setDraggable(pickedObject);
+      setActiveObject(pickedObject); // Set đối tượng để drag hoặc rotate
+    } else {
+      setActiveObject(null); // Bỏ chọn nếu click vào vùng khác
     }
   };
 
-  // Di chuyển Object
   const handleMouseMove = (event) => {
-    if (!draggable) return;
+    if (!activeObject || mode !== 'drag') return;
 
+    const rect = event.target.getBoundingClientRect();
     mouse.current.set(
-      (event.clientX / window.innerWidth) * 2 - 1,
-      -(event.clientY / window.innerHeight) * 2 + 1
+      ((event.clientX - rect.left) / rect.width) * 2 - 1,
+      -((event.clientY - rect.top) / rect.height) * 2 + 1
     );
     raycaster.current.setFromCamera(mouse.current, camera);
 
-    const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+    const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -activeObject.position.y);
     const intersectPoint = new THREE.Vector3();
     raycaster.current.ray.intersectPlane(plane, intersectPoint);
 
     if (intersectPoint) {
-      draggable.position.x = intersectPoint.x;
-      draggable.position.z = intersectPoint.z;
+      activeObject.position.x = intersectPoint.x;
+      activeObject.position.z = intersectPoint.z;
+    }
+  };
+
+  const handleKeyDown = (event) => {
+    if (!activeObject) return;
+
+    switch (event.key) {
+      case 'R' || 'r': // Toggle chế độ giữa drag và rotate
+        setMode(mode === 'drag' ? 'rotate' : 'drag');
+        break;
+      case 'Escape': // Hủy chọn object
+        setActiveObject(null);
+        break;
+      default:
+        if (mode === 'rotate') {
+          switch (event.key) {
+            case 'ArrowLeft': // Rotate left
+              activeObject.rotation.y += 0.1;
+              break;
+            case 'ArrowRight': // Rotate right
+              activeObject.rotation.y -= 0.1;
+              break;
+            case 'ArrowUp': // Rotate up
+              activeObject.rotation.x += 0.1;
+              break;
+            case 'ArrowDown': // Rotate down
+              activeObject.rotation.x -= 0.1;
+              break;
+            default:
+              break;
+          }
+        }
     }
   };
 
   useEffect(() => {
-    window.addEventListener('click', handleMouseClick);
-    window.addEventListener('mousemove', handleMouseMove);
+    const canvas = gl.domElement;
+    canvas.addEventListener('click', handleMouseClick);
+    canvas.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      window.removeEventListener('click', handleMouseClick);
-      window.removeEventListener('mousemove', handleMouseMove);
+      canvas.removeEventListener('click', handleMouseClick);
+      canvas.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [draggable]);
+  }, [activeObject, mode]);
 
-  return <>{children}</>;
+  return (
+    <>
+      <Html position={[0, 0, 0]} zIndexRange={[1, 0]}>
+        {/* Hiện nút chỉ khi đã chọn object */}
+        {activeObject && (
+          <div style={{ position: 'absolute', top: 10, left: 10, zIndex: 1 }}>
+            <button
+              onClick={() => setMode(mode === 'drag' ? 'rotate' : 'drag')}
+              style={{
+                backgroundColor: mode === 'drag' ? '#333' : '#555',
+                color: 'white',
+                border: 'none',
+                borderRadius: '3px',
+                padding: '5px 10px',
+                fontSize: '14px',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+              }}
+              onMouseEnter={(e) => (e.target.style.backgroundColor = '#000')}
+              onMouseLeave={(e) =>
+                (e.target.style.backgroundColor = mode === 'drag' ? '#333' : '#555')
+              }
+            >
+              {mode === 'drag' ? 'Switch to Rotate' : 'Switch to Drag'}
+            </button>
+          </div>
+        )}
+      </Html>
+      {children}
+    </>
+  );
 };
 
-// Component Model
-const Model = ({ url }) => {
+const centerModelToOrigin = (object) => {
+  const box = new THREE.Box3().setFromObject(object);
+  const center = box.getCenter(new THREE.Vector3());
+  object.position.sub(center);
+};
+
+const ArchitectureModel = ({ url }) => {
   const { scene } = useGLTF(url);
+
+  useEffect(() => {
+    centerModelToOrigin(scene);
+
+    scene.traverse((child) => {
+      if (child.isMesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+  }, [scene]);
+
+  return <primitive object={scene} />;
+};
+
+const FurnitureModel = ({ model }) => {
+  const { scene } = useGLTF(model.model_3d);
 
   useEffect(() => {
     scene.traverse((child) => {
       if (child.isMesh) {
         child.castShadow = true;
         child.receiveShadow = true;
-
-        // Đánh dấu là draggable
         scene.userData.draggable = true;
-
-        // Debug Bounding Box
-        const boxHelper = new THREE.BoxHelper(scene, 0xff0000);
-        scene.add(boxHelper);
       }
     });
   }, [scene]);
 
-  return <primitive object={scene} scale={1} />;
+  return <primitive object={scene} scale={1} position={model.position} />;
 };
 
-// Component chính
-const EditableModelViewer = ({ modelUrl }) => {
+const EditableModelViewer = ({ modelUrl, furnitureModels }) => {
+  furnitureModels = furnitureModels || [];
+
   if (!modelUrl) {
     return <div style={{ textAlign: 'center', marginTop: '20px' }}>Chọn một mô hình để hiển thị</div>;
   }
@@ -127,9 +194,13 @@ const EditableModelViewer = ({ modelUrl }) => {
     >
       <ambientLight intensity={0.8} />
       <directionalLight position={[5, 5, 5]} intensity={1.5} castShadow />
-      <Suspense fallback={null}>
+      <gridHelper args={[10, 10]} position={[0, 0, 0]} />
+      <Suspense fallback={<mesh><boxGeometry /><meshBasicMaterial color="gray" /></mesh>}>
         <Draggable>
-          <Model url={modelUrl} />
+          {modelUrl && <ArchitectureModel url={modelUrl} />}
+          {furnitureModels.map((furniture, index) => (
+            <FurnitureModel key={index} model={furniture} />
+          ))}
         </Draggable>
       </Suspense>
       <OrbitControls enableZoom={true} />
