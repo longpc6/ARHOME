@@ -156,10 +156,6 @@ const ProductPage = () => {
                     <option value="diamond">Giả kim cương</option>
                   </select>
                 </div>
-                <div className="texture-picker">
-                  <label>Tải ảnh để in lên mô hình:</label>
-                  <input type="file" accept="image/*" onChange={handleTextureUpload} />
-                </div>
                 <div className="button-container">
                   <button
                     onClick={() => handleAddToFavourite(selectedFurniture._id)}
