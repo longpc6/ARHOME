@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import EditableModelViewer from '../../components/EditableModelView/EditableModelViewer.js';
+import "./RoomBuilderPage.css";
 
 const FurnitureItem = ({ model, onDragStart }) => (
   <div

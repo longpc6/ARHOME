@@ -48,12 +48,16 @@
   height: 100%;
   background: rgba(0, 0, 0, 0.7);
   z-index: 999;
-  display: none; /* Ẩn overlay mặc định */
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s linear 0.3s, opacity 0.3s ease;
 }
 
 /* Hiển thị overlay khi modal đang mở */
 .modal-overlay.active {
-  display: block;
+  visibility: visible;
+  opacity: 1;
+  transition-delay: 0s;
 }
 
 /* Modal Box */
@@ -67,7 +71,9 @@
   width: 80%;
   max-width: 800px;
   z-index: 1000;
-  display: none; /* Ẩn modal mặc định */
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s linear 0.3s, opacity 0.3s ease;
   flex-direction: row;
   overflow: hidden;
 }
@@ -75,12 +81,17 @@
 /* Hiển thị modal khi active */
 .modal.active {
   display: flex;
+  visibility: visible;
+  opacity: 1;
+  transition-delay: 0s;
 }
 
 .modal-content {
   display: flex;
   width: 100%;
   height: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 /* Model Viewer trong Modal */
@@ -126,57 +137,11 @@
   justify-content: center; /* Căn giữa các nút */
 }
 
-.modal-content .cart-button,
-.modal-content .buy-button {
-  padding: 12px 30px;
-  font-size: 16px;
-  font-weight: bold;
-  text-transform: uppercase;
-  background-color: #333; /* Màu nền giống với nút Close */
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
-}
-
-.modal-content .cart-button:hover,
-.modal-content .buy-button:hover {
-  background-color: #555; /* Màu tối hơn khi hover */
-  transform: translateY(-2px);
-  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
-}
-
 .modal-content .cart-button:active,
 .modal-content .buy-button:active {
   background-color: #111; /* Màu tối nhất khi nhấn giữ */
   transform: translateY(0);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-}
-
-.quantity-control {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 20px;
-  font-size: 18px;
-}
-
-.quantity-control button {
-  background-color: #333;
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 4px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.quantity-control button:hover {
-  background-color: #555;
 }
 
 .color-picker,

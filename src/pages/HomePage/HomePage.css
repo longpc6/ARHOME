@@ -1,31 +1,48 @@
 /* HomePage.css */
-  .btn-primary {
-    background-color: #007bff;
-    color: white;
-    padding: 10px 20px;
-    text-decoration: none;
-    border-radius: 5px;
-  }
-  
-  .featured-products {
-    padding: 50px 20px;
-    background-color: #f9f9f9;
-  }
-  
-  .product-list {
-    display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
-  }
-  
-  .product-item {
-    text-align: center;
-    margin: 20px;
-  }
-  
-  .product-item img {
-    width: 200px;
-    height: auto;
-    border-radius: 5px;
-  }
-  
+
+.homepage {
+  font-family: 'Arial', sans-serif;
+  line-height: 1.6;
+}
+
+.homepage-intro {
+  text-align: center;
+  margin: 50px 20px;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.homepage-intro h2 {
+  font-size: 32px;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.homepage-intro p {
+  font-size: 18px;
+  color: #555;
+}
+
+.homepage-button {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.btn-primary-homepage {
+  background-color: #111;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 5px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s ease;
+}
+
+.btn-primary-homepage:hover {
+  background-color: #e64a19;
+  transform: translateY(-3px);
+}

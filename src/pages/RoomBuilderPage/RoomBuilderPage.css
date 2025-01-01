@@ -1,53 +1,116 @@
 /* RoomBuilderPage.css */
 .room-builder {
-    display: flex;
-    justify-content: space-between;
-    padding: 50px 20px;
-    background-color: #f1f1f1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 30px 20px;
+  background-color: #e8f0fe; /* Nền xanh nhạt để dịu mắt */
+  font-family: 'Arial', sans-serif;
+}
+
+/* Bố cục chia đôi khi màn hình lớn */
+@media (min-width: 768px) {
+  .room-builder {
+      flex-direction: row;
+      justify-content: space-between;
   }
-  
+}
+
+.item-list, .room-area {
+  width: 100%;
+  border: 2px solid #ddd;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #ffffff; /* Nền trắng cho từng khối */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Hiệu ứng nổi nhẹ */
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.item-list:hover, .room-area:hover {
+  transform: translateY(-5px); /* Hiệu ứng nhấn mạnh */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.item-list h2, .room-area h2 {
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  color: #333; /* Chữ màu đậm dễ đọc */
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 5px;
+}
+
+.item {
+  margin-bottom: 15px;
+  text-align: center;
+  cursor: grab;
+  padding: 10px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.item:hover {
+  background-color: #f0f8ff;
+  border-color: #007bff;
+}
+
+.item img {
+  width: 80px;
+  height: auto;
+  border-radius: 5px;
+  transition: transform 0.3s;
+}
+
+.item img:hover {
+  transform: scale(1.1);
+}
+
+.room-area {
+  min-height: 400px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 10px;
+  position: relative;
+}
+
+.room-area p {
+  color: #666;
+  font-size: 1rem;
+  text-align: center;
+  width: 100%;
+}
+
+.room-item {
+  margin: 10px;
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.room-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.room-item img {
+  width: 90px;
+  height: auto;
+  border-radius: 5px;
+  transition: transform 0.3s;
+}
+
+.room-item img:hover {
+  transform: scale(1.1);
+}
+
+@media (max-width: 767px) {
   .item-list, .room-area {
-    width: 45%;
-    border: 2px solid #ccc;
-    padding: 20px;
-    border-radius: 5px;
-    background-color: #f9f9f9;
+      width: 100%;
   }
-  
-  .item-list h2, .room-area h2 {
-    margin-bottom: 20px;
-  }
-  
-  .item {
-    margin-bottom: 15px;
-    text-align: center;
-    cursor: grab;
-  }
-  
-  .item img {
-    width: 100px;
-    height: auto;
-  }
-  
+
   .room-area {
-    min-height: 300px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    align-items: flex-start;
+      min-height: 300px;
   }
-  
-  .room-area p {
-    color: #666;
-  }
-  
-  .room-item {
-    margin: 10px;
-    text-align: center;
-  }
-  
-  .room-item img {
-    width: 100px;
-    height: auto;
-  }
-  
+}

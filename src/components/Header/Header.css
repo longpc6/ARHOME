@@ -64,6 +64,7 @@
   padding: 10px 20px;
   border-radius: 5px;
   font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
   text-decoration: none;
 }
@@ -80,12 +81,13 @@
 }
 
 .signup-btn {
-  background-color: #007BFF;
+  background-color: #ff5722;
+  border: 2px;
   color: white;
 }
 
 .signup-btn:hover {
-  background-color: #0056b3;
+  background-color: #e64a19;
 }
 
 .nav a {
